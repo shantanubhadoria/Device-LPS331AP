@@ -1,23 +1,24 @@
 package Device::LPS331AP::Altimeter;
 
-# PODNAME: Device::LPS331AP::Thermometer 
-# ABSTRACT: I2C interface to LPS331AP Thermometer using Device::SMBus
+# PODNAME: Device::LPS331AP::Altimeter 
+# ABSTRACT: I2C interface to LPS331AP Altimeter using Device::SMBus
 # COPYRIGHT
 # VERSION
 
 use 5.010;
 use Moose;
-use POSIX
+use POSIX;
 
-# Registers for the Accelerometer 
+# Registers for the Altimeter 
 use constant {
     CTRL_REG1 => 0x20,
 };
 
 # X, Y and Z Axis magnetic Field Data value in 2's complement
 use constant {
-    PRESS_OUT_H => 0x2a,
-    PRESS_OUT_L => 0x29,
+    PRESS_OUT_H  => 0x2a,
+    PRESS_OUT_L  => 0x29,
+    PRESS_OUT_XL => 0x28,
 
     TEMP_OUT_H => 0x2c,
     TEMP_OUT_L => 0x2b,
@@ -69,13 +70,53 @@ sub getRawReading {
     my ($self) = @_;
 
     return (
-        pressure    => ( $self->_typecast_int_to_int16( ($self->readByteData(PRESS_OUT_H) << 8) | $self->readByteData(PRESS_OUT_L) ) ) ,
+        pressure => (
+            ( $self->_typecast_int_to_int32( $self->readByteData(PRESS_OUT_H) ) << 16)
+            | ( $self->_typecast_int_to_int16( $self->readByteData(PRESS_OUT_L) ) << 8)
+            | ($self->readByteData(PRESS_OUT_XL) )
+        ),
         temperature => ( $self->_typecast_int_to_int16( ($self->readByteData(TEMP_OUT_H) << 8) | $self->readByteData(TEMP_OUT_L) ) ) ,
     );
 }
 
+sub getPressureMillibars{
+    my ($self) = @_;
+
+    return (
+            ( $self->_typecast_int_to_int32( $self->readByteData(PRESS_OUT_H) ) << 16)
+            | ( $self->_typecast_int_to_int16( $self->readByteData(PRESS_OUT_L) ) << 8)
+            | ($self->readByteData(PRESS_OUT_XL) )
+    )/4096;
+}
+
+sub getPressureInchesHg{
+    my ($self) = @_;
+
+    return (
+            ( $self->_typecast_int_to_int32( $self->readByteData(PRESS_OUT_H) ) << 16)
+            | ( $self->_typecast_int_to_int16( $self->readByteData(PRESS_OUT_L) ) << 8)
+            | ($self->readByteData(PRESS_OUT_XL) )
+    )/138706.5;
+}
+
+sub getTemperatureCelsius{
+    my ($self) = @_;
+    
+    return 42.5 + (( $self->_typecast_int_to_int16( ($self->readByteData(TEMP_OUT_H) << 8) | $self->readByteData(TEMP_OUT_L) ) )/480);
+}
+
+sub getTemperatureFarenheit{
+    my ($self) = @_;
+    
+    return 108.5 + (( $self->_typecast_int_to_int16( ($self->readByteData(TEMP_OUT_H) << 8) | $self->readByteData(TEMP_OUT_L) ) ) / 480 * 1.8);
+}
+
 sub _typecast_int_to_int16 {
     return  unpack 's' => pack 'S' => $_[1];
+}
+
+sub _typecast_int_to_int32 {
+    return  unpack 'ss' => pack 'SS' => $_[1];
 }
 
 sub calibrate {
