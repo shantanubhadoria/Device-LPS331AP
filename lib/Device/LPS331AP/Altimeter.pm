@@ -8,6 +8,7 @@ package Device::LPS331AP::Altimeter;
 use 5.010;
 use Moose;
 use POSIX;
+use Math::BigFloat;
 
 # Registers for the Altimeter 
 use constant {
@@ -54,8 +55,7 @@ default = 1 111 0 1 1 0
 
 sub enable {
     my ($self) = @_;
-    $self->writeByteData(CTRL_REG1,0b11110110);
-    $self->writeByteData(CTRL_REG1,0b11110110);
+    $self->writeByteData(CTRL_REG1,0b11100000);
 }
 
 =method getRawReading
@@ -82,33 +82,34 @@ sub getRawReading {
 sub getPressureMillibars{
     my ($self) = @_;
 
-    return (
-            ( $self->_typecast_int_to_int32( $self->readByteData(PRESS_OUT_H) ) << 16)
+    my $pressure_raw = ( $self->_typecast_int_to_int32( $self->readByteData(PRESS_OUT_H) ) << 16)
             | ( $self->_typecast_int_to_int16( $self->readByteData(PRESS_OUT_L) ) << 8)
             | ($self->readByteData(PRESS_OUT_XL) )
-    )/4096;
+    ;
+    return Math::BigFloat->new( ( $self->_typecast_int_to_int32( $self->readByteData(PRESS_OUT_H) ) << 16)
+            | ( $self->_typecast_int_to_int16( $self->readByteData(PRESS_OUT_L) ) << 8)
+            | ($self->readByteData(PRESS_OUT_XL) ) )/4096;
 }
 
 sub getPressureInchesHg{
     my ($self) = @_;
-
-    return (
+    return Math::BigFloat->new(
             ( $self->_typecast_int_to_int32( $self->readByteData(PRESS_OUT_H) ) << 16)
             | ( $self->_typecast_int_to_int16( $self->readByteData(PRESS_OUT_L) ) << 8)
             | ($self->readByteData(PRESS_OUT_XL) )
-    )/138706.5;
+    ) / 138706.5;
 }
 
 sub getTemperatureCelsius{
     my ($self) = @_;
     
-    return 42.5 + (( $self->_typecast_int_to_int16( ($self->readByteData(TEMP_OUT_H) << 8) | $self->readByteData(TEMP_OUT_L) ) )/480);
+    return 42.5 + (Math::BigFloat->new( $self->_typecast_int_to_int16( ($self->readByteData(TEMP_OUT_H) << 8) | $self->readByteData(TEMP_OUT_L) ) ) / 480);
 }
 
 sub getTemperatureFarenheit{
     my ($self) = @_;
     
-    return 108.5 + (( $self->_typecast_int_to_int16( ($self->readByteData(TEMP_OUT_H) << 8) | $self->readByteData(TEMP_OUT_L) ) ) / 480 * 1.8);
+    return 108.5 + (Math::BigFloat->new( $self->_typecast_int_to_int16( ($self->readByteData(TEMP_OUT_H) << 8) | $self->readByteData(TEMP_OUT_L) ) ) / 480 * 1.8);
 }
 
 sub _typecast_int_to_int16 {
