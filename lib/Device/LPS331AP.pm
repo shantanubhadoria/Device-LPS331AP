@@ -28,7 +28,7 @@ has 'I2CBusDevicePath' => (
     $self->Altimeter->enable();
     $self->Altimeter->getReading();
 
-This is a object of [[Device::LPS331AP::Altimeter]]
+This is a object of L<Device::LPS331AP::Altimeter>
 
 =cut
 
