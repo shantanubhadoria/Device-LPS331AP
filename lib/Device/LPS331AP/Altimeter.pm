@@ -8,7 +8,6 @@ package Device::LPS331AP::Altimeter;
 use 5.010;
 use Moose;
 use POSIX;
-use Math::BigFloat;
 
 # Registers for the Altimeter 
 use constant {
@@ -25,7 +24,7 @@ use constant {
     TEMP_OUT_L => 0x2b,
 };
 
-use integer; # Use arithmetic right shift instead of unsigned binary right shift with >> 4
+#use integer; # Use arithmetic right shift instead of unsigned binary right shift with >> 4
 
 extends 'Device::SMBus';
 
@@ -70,46 +69,55 @@ sub getRawReading {
     my ($self) = @_;
 
     return (
-        pressure => (
-            ( $self->_typecast_int_to_int32( $self->readByteData(PRESS_OUT_H) ) << 16)
-            | ( $self->_typecast_int_to_int16( $self->readByteData(PRESS_OUT_L) ) << 8)
-            | ($self->readByteData(PRESS_OUT_XL) )
-        ),
+        pressure => $self->readNBytes(PRESS_OUT_XL,3),
         temperature => ( $self->_typecast_int_to_int16( ($self->readByteData(TEMP_OUT_H) << 8) | $self->readByteData(TEMP_OUT_L) ) ) ,
+        temp => $self->readNBytes(TEMP_OUT_L,2) ,
     );
 }
 
 sub getPressureMillibars{
     my ($self) = @_;
-
-    my $pressure_raw = ( $self->_typecast_int_to_int32( $self->readByteData(PRESS_OUT_H) ) << 16)
-            | ( $self->_typecast_int_to_int16( $self->readByteData(PRESS_OUT_L) ) << 8)
-            | ($self->readByteData(PRESS_OUT_XL) )
-    ;
-    return Math::BigFloat->new( ( $self->_typecast_int_to_int32( $self->readByteData(PRESS_OUT_H) ) << 16)
-            | ( $self->_typecast_int_to_int16( $self->readByteData(PRESS_OUT_L) ) << 8)
-            | ($self->readByteData(PRESS_OUT_XL) ) )/4096;
+    return $self->readNBytes(PRESS_OUT_XL,3)/4096;
 }
 
 sub getPressureInchesHg{
     my ($self) = @_;
-    return Math::BigFloat->new(
-            ( $self->_typecast_int_to_int32( $self->readByteData(PRESS_OUT_H) ) << 16)
-            | ( $self->_typecast_int_to_int16( $self->readByteData(PRESS_OUT_L) ) << 8)
-            | ($self->readByteData(PRESS_OUT_XL) )
-    ) / 138706.5;
+    return $self->readNBytes(PRESS_OUT_XL,3)/138706.5;
+}
+
+=head2
+
+converts pressure in mbar to altitude in meters, using 1976 US
+Standard Atmosphere model (note that this formula only applies to a
+height of 11 km, or about 36000 ft)
+If altimeter setting (QNH, barometric pressure adjusted to sea
+level) is given, this function returns an indicated altitude
+compensated for actual regional pressure; otherwise, it returns
+the pressure altitude above the standard pressure level of 1013.25
+mbar or 29.9213 inHg
+
+QNH is the Barometric pressure adjusted to sea level for a particular region. This value helps altitude corrections based on base barometric pressure in your region.
+
+(a-((x/b)^c))*d;
+d - (x^c)*(d/b^c);
+=cut
+
+sub getPressureToAltitudeMeters {
+    my ($self,$pressure,$qnh) = @_;
+    $qnh |= 1013.25;
+    my $altitude = (1-(($pressure/$qnh)**(0.190263)))*44330.8;
 }
 
 sub getTemperatureCelsius{
     my ($self) = @_;
     
-    return 42.5 + (Math::BigFloat->new( $self->_typecast_int_to_int16( ($self->readByteData(TEMP_OUT_H) << 8) | $self->readByteData(TEMP_OUT_L) ) ) / 480);
+    return 42.5 +  $self->_typecast_int_to_int16($self->readNBytes(TEMP_OUT_L,2))/480;
 }
 
 sub getTemperatureFarenheit{
     my ($self) = @_;
     
-    return 108.5 + (Math::BigFloat->new( $self->_typecast_int_to_int16( ($self->readByteData(TEMP_OUT_H) << 8) | $self->readByteData(TEMP_OUT_L) ) ) / 480 * 1.8);
+    return 108.5 +  $self->_typecast_int_to_int16($self->readNBytes(TEMP_OUT_L,2))/480 * 1.8;
 }
 
 sub _typecast_int_to_int16 {
