@@ -1,5 +1,8 @@
 Changelog for Device-LPS331AP
 
+0.003 2013-09-12T09:22:17
+ - Added README.pod and Changes [Shantanu]
+
 0.002 2013-09-11T09:27:04
  - pod fix [Shantanu]
  - pod fix [Shantanu]
