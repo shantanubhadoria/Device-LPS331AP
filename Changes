@@ -1,6 +1,14 @@
-Revision history for Perl extension Device::LPS331AP.
+Changelog for Device-LPS331AP
 
-0.001  Sat Sep  7 13:18:47 2013
-	- original version;  
-0.002
-  - Pod Fix
+0.002 2013-09-11T09:27:04
+ - pod fix [Shantanu]
+ - pod fix [Shantanu]
+ - pod fix [Shantanu]
+
+0.001 2013-09-11T09:08:21
+ - first push [Shantanu]
+ - First push [Shantanu Bhadoria]
+ - first fixes [Shantanu Bhadoria]
+ - First few working changes [Shantanu Bhadoria]
+ - first commit [Shantanu Bhadoria]
+
