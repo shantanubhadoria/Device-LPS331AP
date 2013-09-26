@@ -5,6 +5,7 @@ package Device::LPS331AP::Altimeter;
 # COPYRIGHT
 # VERSION
 
+# Dependencies
 use 5.010;
 use Moose;
 use POSIX;
@@ -27,6 +28,12 @@ use constant {
 #use integer; # Use arithmetic right shift instead of unsigned binary right shift with >> 4
 
 extends 'Device::SMBus';
+
+=attr I2CDeviceAddress
+
+Containd the I2CDevice Address for the bus on which your altimeter is connected. It would look like 0x6b. Default is 0x5d.
+
+=cut
 
 has '+I2CDeviceAddress' => (
     is      => 'ro',

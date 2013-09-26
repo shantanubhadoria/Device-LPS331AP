@@ -5,11 +5,11 @@ package Device::LPS331AP;
 # COPYRIGHT
 # VERSION
 
+# Dependencies
 use 5.010;
 use Moose;
 use POSIX
 
-# Dependencies
 use Device::LPS331AP::Altimeter;
 
 has 'I2CBusDevicePath' => (
