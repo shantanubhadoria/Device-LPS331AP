@@ -8,13 +8,29 @@ package Device::LPS331AP;
 # Dependencies
 use 5.010;
 use Moose;
-use POSIX
+use POSIX;
 
 use Device::LPS331AP::Altimeter;
+
+=attr I2CBusDevicePath
+
+this is the device file path for your I2CBus that the LPS331AP is connected on e.g. /dev/i2c-1
+This must be provided during object creation.
+
+=cut
 
 has 'I2CBusDevicePath' => (
     is => 'ro',
 );
+
+=attr Altimeter
+
+    $self->Altimeter->enable();
+    $self->Altimeter->getReading();
+
+This is a object of L<Device::LPS331AP::Altimeter>
+
+=cut
 
 has Altimeter => (
     is => 'ro',
@@ -25,7 +41,7 @@ has Altimeter => (
 sub _build_Altimeter {
     my ($self) = @_;
     my $obj = Device::LPS331AP::Altimeter->new(
-        I2CBusDevicePath => $self->I2CBusDevicePath;
+        I2CBusDevicePath => $self->I2CBusDevicePath
     );
     return $obj;
 }
