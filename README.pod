@@ -6,7 +6,7 @@ Device::LPS331AP - I2C interface to LPS331AP Thermometer and Barometer using Dev
 
 =head1 VERSION
 
-version 0.003
+version 0.004
 
 =head1 ATTRIBUTES
 
@@ -20,7 +20,7 @@ This must be provided during object creation.
     $self->Altimeter->enable();
     $self->Altimeter->getReading();
 
-This is a object of L<Device::LPS331AP::Altimeter>
+This is a object of L<Device::Altimeter::LPS331AP>
 
 =for :stopwords cpan testmatrix url annocpan anno bugtracker rt cpants kwalitee diff irc mailto metadata placeholders metacpan
 

@@ -1,6 +1,17 @@
 Changelog for Device-LPS331AP
 
-0.003 2013-09-12T09:22:17
+0.004 2013-09-27T10:29:24
+ - Resolved xt test failures [Shantanu]
+ - Refactoring Submodule to allow easy loading of similar subdevices as
+   plugins using a common prefix in MOP [Shantanu Bhadoria]
+ - Merge branch 'master' of github.com:shantanubhadoria/Device-LPS331AP
+   [Shantanu Bhadoria]
+ - Minor Changes [Shantanu Bhadoria]
+
+0.003 2013-09-12T09:22:34
+ - v0.003
+   
+    - Added README.pod and Changes [Shantanu] [Shantanu]
  - Added README.pod and Changes [Shantanu]
 
 0.002 2013-09-11T09:27:04
