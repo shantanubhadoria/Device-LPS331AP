@@ -1,6 +1,6 @@
-package Device::LPS331AP::Altimeter;
+package Device::Altimeter::LPS331AP;
 
-# PODNAME: Device::LPS331AP::Altimeter 
+# PODNAME: Device::Altimeter::LPS331AP 
 # ABSTRACT: I2C interface to LPS331AP Altimeter using Device::SMBus
 # COPYRIGHT
 # VERSION

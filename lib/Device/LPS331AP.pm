@@ -10,7 +10,7 @@ use 5.010;
 use Moose;
 use POSIX;
 
-use Device::LPS331AP::Altimeter;
+use Device::Altimeter::LPS331AP;
 
 =attr I2CBusDevicePath
 
@@ -28,19 +28,19 @@ has 'I2CBusDevicePath' => (
     $self->Altimeter->enable();
     $self->Altimeter->getReading();
 
-This is a object of L<Device::LPS331AP::Altimeter>
+This is a object of L<Device::Altimeter::LPS331AP>
 
 =cut
 
 has Altimeter => (
     is => 'ro',
-    isa => 'Device::LPS331AP::Altimeter',
+    isa => 'Device::Altimeter::LPS331AP',
     lazy_build => 1,
 );
 
 sub _build_Altimeter {
     my ($self) = @_;
-    my $obj = Device::LPS331AP::Altimeter->new(
+    my $obj = Device::Altimeter::LPS331AP->new(
         I2CBusDevicePath => $self->I2CBusDevicePath
     );
     return $obj;
