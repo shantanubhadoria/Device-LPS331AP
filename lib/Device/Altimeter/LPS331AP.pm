@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 package Device::Altimeter::LPS331AP;
 
 # PODNAME: Device::Altimeter::LPS331AP 
@@ -10,12 +12,30 @@ use 5.010;
 use Moose;
 use POSIX;
 
-# Registers for the Altimeter 
+# Registers for the Altimeter
+
+=register CTRL_REG1
+
+=cut
+
 use constant {
     CTRL_REG1 => 0x20,
 };
 
 # X, Y and Z Axis magnetic Field Data value in 2's complement
+
+=register PRESS_OUT_H
+
+=register PRESS_OUT_L
+
+=register PRESS_OUT_XL
+
+=register TEMP_OUT_H
+
+=register TEMP_OUT_L
+
+=cut
+
 use constant {
     PRESS_OUT_H  => 0x2a,
     PRESS_OUT_L  => 0x29,
@@ -31,7 +51,7 @@ extends 'Device::SMBus';
 
 =attr I2CDeviceAddress
 
-Containd the I2CDevice Address for the bus on which your altimeter is connected. It would look like 0x6b. Default is 0x5d.
+Contains the I2CDevice Address for the bus on which your altimeter is connected. It would look like 0x6b. Default is 0x5d.
 
 =cut
 
@@ -82,17 +102,29 @@ sub getRawReading {
     );
 }
 
+=method getPressureMillibars
+
+Get pressure in Millibars
+
+=cut
+
 sub getPressureMillibars{
     my ($self) = @_;
     return $self->readNBytes(PRESS_OUT_XL,3)/4096;
 }
+
+=method getPressureInchesHg
+
+Get pressure in inches of mercury
+
+=cut
 
 sub getPressureInchesHg{
     my ($self) = @_;
     return $self->readNBytes(PRESS_OUT_XL,3)/138706.5;
 }
 
-=head2
+=method getPressureToAltitudeMeters
 
 converts pressure in mbar to altitude in meters, using 1976 US
 Standard Atmosphere model (note that this formula only applies to a
@@ -115,13 +147,25 @@ sub getPressureToAltitudeMeters {
     my $altitude = (1-(($pressure/$qnh)**(0.190263)))*44330.8;
 }
 
+=method getTemperatureCelsius
+
+Get Temperature in degrees celsius
+
+=cut
+
 sub getTemperatureCelsius{
     my ($self) = @_;
     
     return 42.5 +  $self->_typecast_int_to_int16($self->readNBytes(TEMP_OUT_L,2))/480;
 }
 
-sub getTemperatureFarenheit{
+=method getTemperatureFahrenheit
+
+Get Temperature in Fahrenheit
+
+=cut
+
+sub getTemperatureFahrenheit{
     my ($self) = @_;
     
     return 108.5 +  $self->_typecast_int_to_int16($self->readNBytes(TEMP_OUT_L,2))/480 * 1.8;
@@ -134,6 +178,12 @@ sub _typecast_int_to_int16 {
 sub _typecast_int_to_int32 {
     return  unpack 'ss' => pack 'SS' => $_[1];
 }
+
+=method calibrate
+
+Placeholder for a calibration function
+
+=cut
 
 sub calibrate {
     my ($self) =@_;

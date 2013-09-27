@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 package Device::LPS331AP;
 
 # PODNAME: Device::LPS331AP 

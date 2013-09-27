@@ -11,6 +11,6 @@ while(){
     say 'millibars: ' . Dumper $a->getPressureMillibars();
     say 'InchesHg: ' . $a->getPressureInchesHg();
     say 'Celsius: ' . $a->getTemperatureCelsius();
-    say 'Farenheit: ' . $a->getTemperatureFarenheit();
+    say 'Fahrenheit: ' . $a->getTemperatureFahrenheit();
     say 'ALTITUDE: ' . $a->getPressureToAltitudeMeters($a->getPressureMillibars,1011);
 }
