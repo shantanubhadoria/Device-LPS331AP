@@ -9,8 +9,10 @@ package Device::Altimeter::LPS331AP;
 
 # Dependencies
 use 5.010;
-use Moose;
 use POSIX;
+
+use Moose;
+extends 'Device::SMBus';
 
 # Registers for the Altimeter
 
@@ -44,10 +46,6 @@ use constant {
     TEMP_OUT_H => 0x2c,
     TEMP_OUT_L => 0x2b,
 };
-
-#use integer; # Use arithmetic right shift instead of unsigned binary right shift with >> 4
-
-extends 'Device::SMBus';
 
 =attr I2CDeviceAddress
 
@@ -88,7 +86,7 @@ sub enable {
 
     $self->getRawReading()
 
-Return raw readings from accelerometer registers
+Return raw readings from registers
 
 =cut
 
