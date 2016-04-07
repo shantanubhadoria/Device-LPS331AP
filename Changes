@@ -1,6 +1,10 @@
 Changelog for Device-LPS331AP
 
-0.005 2015-03-25T07:29:06
+0.006 2016-04-07T06:42:36
+ - No changes found
+
+0.005 2015-03-25T07:29:34
+ - v0.005 (Shantanu Bhadoria)
  - fixed extends removed commented code, why the heck did I do that??
    (Shantanu Bhadoria)
 
@@ -24,4 +28,3 @@ Changelog for Device-LPS331AP
  - first fixes (Shantanu Bhadoria)
  - First few working changes (Shantanu Bhadoria)
  - first commit (Shantanu Bhadoria)
-
